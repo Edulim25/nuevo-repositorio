@@ -2,6 +2,8 @@ import sql from '@/lib/db';
 import { notFound } from 'next/navigation';
 import Board from './Board';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: Promise<{
     companySlug: string;

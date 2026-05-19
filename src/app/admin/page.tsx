@@ -1,6 +1,8 @@
 import sql from '@/lib/db';
 import AdminClient from './AdminClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
   let companies: any[] = [];
   let games: any[] = [];
