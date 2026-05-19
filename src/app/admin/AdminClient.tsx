@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { startGame, drawBall, endGame, generateCards } from './actions';
+import { logout } from './auth-actions';
 
-export default function AdminClient({ companies, activeGames }: { companies: any[], activeGames: any[] }) {
-  const [selectedCompany, setSelectedCompany] = useState(companies[0]?.id || '');
+export default function AdminClient({ companies, activeGames }: { companies: Record<string, unknown>[], activeGames: Record<string, unknown>[] }) {
+  const company = companies[0];
+  const selectedCompany = company?.id;
   const [pattern, setPattern] = useState('figuras');
   const [targetCardId, setTargetCardId] = useState('');
   const [targetBall, setTargetBall] = useState('');
@@ -19,14 +21,18 @@ export default function AdminClient({ companies, activeGames }: { companies: any
         <h2 style={{ marginBottom: '20px' }}>Nuevo Juego</h2>
         
         <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Empresa</label>
-          <select 
-            value={selectedCompany} 
-            onChange={e => setSelectedCompany(e.target.value)}
-            style={{ width: '100%', padding: '10px', borderRadius: '5px', background: '#334155', color: 'white', border: 'none' }}
-          >
-            {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={{ display: 'block', marginBottom: '5px' }}>Empresa</label>
+            <button 
+              onClick={() => logout()}
+              style={{ background: 'transparent', color: '#ef4444', border: '1px solid #ef4444', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+            >
+              Cerrar Sesión
+            </button>
+          </div>
+          <div style={{ width: '100%', padding: '10px', borderRadius: '5px', background: '#334155', color: 'white', border: 'none', fontWeight: 'bold' }}>
+            {String(company?.name)}
+          </div>
         </div>
 
         <div style={{ marginBottom: '20px' }}>
