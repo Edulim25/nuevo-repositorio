@@ -238,6 +238,7 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                     })}
                   </div>
                 </div>
+                </div>
               </div>
             )
           })
