@@ -92,36 +92,14 @@ export async function undoLastBall(gameId: number) {
   return { success: true };
 }
 
-function getRandomNumbers(min: number, max: number, count: number) {
-  const nums = new Set<number>();
-  while (nums.size < count) {
-    nums.add(Math.floor(Math.random() * (max - min + 1)) + min);
-  }
-  return Array.from(nums);
-}
-
-export async function generateCards(gameId: number, count: number) {
-  const newCards = [];
-  for (let i = 0; i < count; i++) {
-    const b = getRandomNumbers(1, 15, 5);
-    const i_col = getRandomNumbers(16, 30, 5);
-    const n = getRandomNumbers(31, 45, 5);
-    n[2] = 0; // FREE SPACE
-    const g = getRandomNumbers(46, 60, 5);
-    const o = getRandomNumbers(61, 75, 5);
-
-    const grid = [
-      [b[0], i_col[0], n[0], g[0], o[0]],
-      [b[1], i_col[1], n[1], g[1], o[1]],
-      [b[2], i_col[2], n[2], g[2], o[2]], 
-      [b[3], i_col[3], n[3], g[3], o[3]],
-      [b[4], i_col[4], n[4], g[4], o[4]],
-    ];
-    newCards.push({ game_id: gameId, player_name: `Cartón ${i + 1}`, numbers_json: JSON.stringify(grid) });
-  }
-
-  // Insert in chunks or just use postgres multi-insert
-  await sql`INSERT INTO cards ${sql(newCards, 'game_id', 'player_name', 'numbers_json')}`;
+export async function loadCardsFromMaster(gameId: number, startRange: number, endRange: number) {
+  // Instead of generating random cards, we import them from the master_cards table
+  await sql`
+    INSERT INTO cards (game_id, player_name, numbers_json)
+    SELECT ${gameId}, 'Cartón ' || card_number, numbers_json
+    FROM master_cards
+    WHERE card_number >= ${startRange} AND card_number <= ${endRange}
+  `;
   
   revalidatePath('/admin');
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { startGame, drawBall, endGame, generateCards, drawSpecificBall, undoLastBall } from './actions';
+import { startGame, drawBall, endGame, loadCardsFromMaster, drawSpecificBall, undoLastBall } from './actions';
 import { logout } from './auth-actions';
 import PatternSelector from './PatternSelector';
 
@@ -152,21 +152,54 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                     </a>
                   </div>
                 )}
-                
-                <div style={{ background: '#d4d0c8', padding: '15px', borderRadius: '8px', border: '2px solid #808080' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                    <h4 style={{ margin: 0, color: 'black' }}>Tablero de Control Manual</h4>
-                    <button 
-                      className="btn" 
-                      style={{ background: '#ef4444', padding: '8px 15px', fontSize: '0.9rem' }}
-                      onClick={async () => {
-                        await undoLastBall(game.id as number);
-                      }}
-                    >
-                      ⏪ Deshacer Última Balota
-                    </button>
+                <div>
+                {!game.is_finished && (
+                  <div style={{ marginBottom: '20px', background: '#d4d0c8', padding: '15px', borderRadius: '8px', border: '2px solid #808080' }}>
+                    <h4 style={{ margin: 0, marginBottom: '10px', color: 'black' }}>Jugar con Cartones (Físicos)</h4>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <input 
+                        type="number" 
+                        placeholder="Desde N°" 
+                        id={`startRange-${game.id}`}
+                        style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: 'white' }}
+                      />
+                      <input 
+                        type="number" 
+                        placeholder="Hasta N°" 
+                        id={`endRange-${game.id}`}
+                        style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: 'white' }}
+                      />
+                      <button 
+                        className="btn" 
+                        onClick={async () => {
+                          const start = parseInt((document.getElementById(`startRange-${game.id}`) as HTMLInputElement).value);
+                          const end = parseInt((document.getElementById(`endRange-${game.id}`) as HTMLInputElement).value);
+                          if (start > 0 && end >= start) {
+                            await loadCardsFromMaster(game.id as number, start, end);
+                          } else {
+                            alert("Ingresa un rango válido.");
+                          }
+                        }}
+                      >
+                        Poner en Juego
+                      </button>
+                    </div>
+                    <p style={{ marginTop: '10px', fontSize: '0.9rem', color: '#333' }}>*Esto cargará los cartones pre-impresos para que el sistema reconozca al ganador automáticamente.</p>
                   </div>
-                  
+                )}  
+                  <div style={{ background: '#d4d0c8', padding: '15px', borderRadius: '8px', border: '2px solid #808080' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                      <h4 style={{ margin: 0, color: 'black' }}>Tablero de Control Manual</h4>
+                      <button 
+                        className="btn" 
+                        style={{ background: '#ef4444', padding: '8px 15px', fontSize: '0.9rem' }}
+                        onClick={async () => {
+                          await undoLastBall(game.id as number);
+                        }}
+                      >
+                        ⏪ Deshacer Última Balota
+                      </button>
+                    </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(15, 1fr)', gap: '4px' }}>
                     {Array.from({ length: 75 }).map((_, i) => {
                       const num = i + 1;
