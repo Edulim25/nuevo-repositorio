@@ -31,34 +31,14 @@ export default async function CompanyPage({ params }: PageProps) {
     drawnBalls = balls.map((b: any) => b.number);
   }
 
-  // Inline CSS variable injection for the company color theme
-  const themeStyle = {
-    '--primary': company.primary_color,
-  } as React.CSSProperties;
-
   return (
-    <div style={themeStyle} className="min-h-full w-full p-8">
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-        <div>
-          <h1 style={{ fontSize: '2.5rem', color: 'var(--primary)', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-            {company.name}
-          </h1>
-          <p style={{ color: '#cbd5e1', fontSize: '1.2rem' }}>
-            {game ? `Juego en curso: ${game.winning_pattern === 'figuras' ? 'Por Figuras' : 'Cartón Lleno'}` : 'Esperando próximo juego...'}
-          </p>
-        </div>
-        
-        {drawnBalls.length > 0 && (
-          <div className="glass-panel" style={{ padding: '20px', textAlign: 'center', minWidth: '150px' }}>
-            <h3 style={{ fontSize: '1rem', color: '#94a3b8', marginBottom: '10px' }}>Última Balota</h3>
-            <div className="bingo-ball active animate-pop" style={{ margin: '0 auto', width: '80px', height: '80px', fontSize: '36px' }}>
-              {drawnBalls[drawnBalls.length - 1]}
-            </div>
-          </div>
-        )}
-      </header>
-
-      <main>
+    <div style={{ backgroundColor: '#d4d0c8', minHeight: '100vh', width: '100%', fontFamily: 'Arial, sans-serif' }}>
+      {/* Top Banner similar to BEANO window header could go here, or just simple */}
+      <div style={{ padding: '5px 10px', background: '#e5e5e5', borderBottom: '2px solid #808080', display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ fontWeight: 'bold', letterSpacing: '2px' }}>BEANO - {company.name.toUpperCase()}</div>
+      </div>
+      
+      <main style={{ padding: '10px' }}>
         <Board drawnBalls={drawnBalls} game={game} />
       </main>
     </div>
