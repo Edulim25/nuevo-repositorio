@@ -10,8 +10,12 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
   const [pattern, setPattern] = useState('figuras');
   const [targetCardId, setTargetCardId] = useState('');
   const [targetBall, setTargetBall] = useState('');
+  const [series, setSeries] = useState('');
+  const [bonusPattern, setBonusPattern] = useState('');
+  const [reintegroPattern, setReintegroPattern] = useState('');
 
   const [cardsCount, setCardsCount] = useState(100);
+  const [printRanges, setPrintRanges] = useState<Record<number, {start: number, end: number}>>({});
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
@@ -47,6 +51,21 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
           </select>
         </div>
 
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Serie (Opcional)</label>
+          <input type="text" placeholder="Ej: Serie A, VIP..." value={series} onChange={e => setSeries(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '5px', background: '#334155', color: 'white', border: 'none' }} />
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Bonus (Opcional)</label>
+          <input type="text" placeholder="Ej: Cuatro Esquinas" value={bonusPattern} onChange={e => setBonusPattern(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '5px', background: '#334155', color: 'white', border: 'none' }} />
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>Reintegro (Opcional)</label>
+          <input type="text" placeholder="Ej: Letra L" value={reintegroPattern} onChange={e => setReintegroPattern(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '5px', background: '#334155', color: 'white', border: 'none' }} />
+        </div>
+
         {pattern === 'llena' && (
           <div style={{ marginBottom: '20px', padding: '15px', background: 'rgba(255,0,0,0.1)', border: '1px solid #ef4444', borderRadius: '8px' }}>
             <h4 style={{ color: '#ef4444', marginBottom: '10px' }}>Ganador Programado (Opcional)</h4>
@@ -71,10 +90,16 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
               Number(selectedCompany), 
               pattern, 
               isNaN(cId) ? undefined : cId, 
-              isNaN(bNum) ? undefined : bNum
+              isNaN(bNum) ? undefined : bNum,
+              series,
+              bonusPattern,
+              reintegroPattern
             );
             setTargetCardId('');
             setTargetBall('');
+            setSeries('');
+            setBonusPattern('');
+            setReintegroPattern('');
           }}
         >
           Iniciar Juego
@@ -113,9 +138,28 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                 )}
 
                 {game.cardsCount > 0 && (
-                  <div style={{ marginBottom: '20px' }}>
-                    <a href={`/admin/cards/${game.id}`} target="_blank" rel="noreferrer">
-                      <button className="btn" style={{ background: '#10b981' }}>🖨️ Ver / Imprimir Cartones</button>
+                  <div style={{ marginBottom: '20px', padding: '15px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', border: '1px solid #10b981' }}>
+                    <h4 style={{ color: '#10b981', marginBottom: '10px' }}>Imprimir Cartones</h4>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+                      <label style={{ fontSize: '0.9rem' }}>Desde N°:</label>
+                      <input 
+                        type="number" 
+                        value={printRanges[game.id as number]?.start || 1} 
+                        onChange={e => setPrintRanges({...printRanges, [game.id as number]: {...printRanges[game.id as number], start: Number(e.target.value)}})} 
+                        style={{ width: '80px', padding: '8px', borderRadius: '4px', background: '#1e293b', color: 'white', border: '1px solid #475569' }} 
+                        min={1}
+                      />
+                      <label style={{ fontSize: '0.9rem' }}>Hasta N°:</label>
+                      <input 
+                        type="number" 
+                        value={printRanges[game.id as number]?.end || game.cardsCount} 
+                        onChange={e => setPrintRanges({...printRanges, [game.id as number]: {...printRanges[game.id as number], end: Number(e.target.value)}})} 
+                        style={{ width: '80px', padding: '8px', borderRadius: '4px', background: '#1e293b', color: 'white', border: '1px solid #475569' }} 
+                        max={game.cardsCount as number}
+                      />
+                    </div>
+                    <a href={`/admin/cards/${game.id}?start=${printRanges[game.id as number]?.start || 1}&end=${printRanges[game.id as number]?.end || game.cardsCount}`} target="_blank" rel="noreferrer">
+                      <button className="btn" style={{ background: '#10b981', width: '100%' }}>🖨️ Ver / Imprimir Rango Seleccionado</button>
                     </a>
                   </div>
                 )}

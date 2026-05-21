@@ -7,10 +7,12 @@ export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ gameId: string }>;
+  searchParams: Promise<{ start?: string, end?: string }>;
 }
 
-export default async function CardsPage({ params }: Props) {
+export default async function CardsPage({ params, searchParams }: Props) {
   const { gameId } = await params;
+  const { start, end } = await searchParams;
   
   const games = await sql`SELECT * FROM games WHERE id = ${Number(gameId)}`;
   const game = games[0];
@@ -21,10 +23,15 @@ export default async function CardsPage({ params }: Props) {
 
   const cards = await sql`SELECT * FROM cards WHERE game_id = ${game.id} ORDER BY id ASC`;
 
+  // Filter by range
+  const startIdx = start ? Number(start) - 1 : 0;
+  const endIdx = end ? Number(end) : cards.length;
+  const rangedCards = cards.slice(Math.max(0, startIdx), Math.min(cards.length, endIdx));
+
   // Dividir en grupos de 8 para forzar una página A4 por grupo
   const chunkedCards = [];
-  for (let i = 0; i < cards.length; i += 8) {
-    chunkedCards.push(cards.slice(i, i + 8));
+  for (let i = 0; i < rangedCards.length; i += 8) {
+    chunkedCards.push(rangedCards.slice(i, i + 8));
   }
 
   return (
@@ -112,9 +119,15 @@ export default async function CardsPage({ params }: Props) {
               const grid = JSON.parse(card.numbers_json);
               return (
                 <div key={card.id} className="card-wrapper">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px', fontWeight: 'bold' }}>
-                    <span>CARTÓN N° {card.id}</span>
-                    <span>S/ {game.id}</span>
+                  <div style={{ textAlign: 'center', marginBottom: '4px', lineHeight: '1.2' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '13px' }}>
+                      CARTÓN N° {startIdx + (pageIndex * 8) + chunk.indexOf(card) + 1} 
+                      <span style={{fontSize: '9px', fontWeight: 'normal', marginLeft: '5px'}}>(ID: {card.id})</span>
+                    </div>
+                    {game.series && <div style={{ fontSize: '11px', fontWeight: 'bold' }}>SERIE: {String(game.series)}</div>}
+                    <div style={{ fontSize: '10px' }}>JUEGA POR: {String(game.winning_pattern)}</div>
+                    {game.bonus_pattern && <div style={{ fontSize: '10px' }}>BONUS: {String(game.bonus_pattern)}</div>}
+                    {game.reintegro_pattern && <div style={{ fontSize: '10px' }}>REINTEGRO: {String(game.reintegro_pattern)}</div>}
                   </div>
                   
                   <div className="bingo-grid">

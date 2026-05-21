@@ -3,10 +3,10 @@
 import sql from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-export async function startGame(companyId: number, pattern: string, targetCardId?: number, targetBall?: number) {
+export async function startGame(companyId: number, pattern: string, targetCardId?: number, targetBall?: number, series?: string, bonusPattern?: string, reintegroPattern?: string) {
   await sql`
-    INSERT INTO games (company_id, status, winning_pattern, target_winning_card_id, target_winning_ball_number) 
-    VALUES (${companyId}, 'active', ${pattern}, ${targetCardId || null}, ${targetBall || null})
+    INSERT INTO games (company_id, status, winning_pattern, target_winning_card_id, target_winning_ball_number, series, bonus_pattern, reintegro_pattern) 
+    VALUES (${companyId}, 'active', ${pattern}, ${targetCardId || null}, ${targetBall || null}, ${series || ''}, ${bonusPattern || ''}, ${reintegroPattern || ''})
   `;
   revalidatePath('/admin');
 }
