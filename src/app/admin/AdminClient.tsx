@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { startGame, drawBall, endGame, generateCards } from './actions';
+import { startGame, drawBall, endGame, generateCards, drawSpecificBall, undoLastBall } from './actions';
 import { logout } from './auth-actions';
 import PatternSelector from './PatternSelector';
 
@@ -153,15 +153,57 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                   </div>
                 )}
                 
-                <button 
-                  className="btn" 
-                  style={{ width: '100%', padding: '20px', fontSize: '1.2rem' }}
-                  onClick={async () => {
-                    await drawBall(game.id);
-                  }}
-                >
-                  SACAR SIGUIENTE BALOTA
-                </button>
+                <div style={{ background: '#d4d0c8', padding: '15px', borderRadius: '8px', border: '2px solid #808080' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <h4 style={{ margin: 0, color: 'black' }}>Tablero de Control Manual</h4>
+                    <button 
+                      className="btn" 
+                      style={{ background: '#ef4444', padding: '8px 15px', fontSize: '0.9rem' }}
+                      onClick={async () => {
+                        await undoLastBall(game.id as number);
+                      }}
+                    >
+                      ⏪ Deshacer Última Balota
+                    </button>
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(15, 1fr)', gap: '4px' }}>
+                    {Array.from({ length: 75 }).map((_, i) => {
+                      const num = i + 1;
+                      const drawnBalls = (game.drawnBalls as number[]) || [];
+                      const isDrawn = drawnBalls.includes(num);
+                      return (
+                        <button
+                          key={num}
+                          onClick={async () => {
+                            if (!isDrawn) {
+                              await drawSpecificBall(game.id as number, num);
+                            }
+                          }}
+                          style={{
+                            aspectRatio: '1/1',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1rem',
+                            fontWeight: 'bold',
+                            background: isDrawn ? '#ffff00' : '#ffffff',
+                            color: 'black',
+                            borderTop: '2px solid #ffffff',
+                            borderLeft: '2px solid #ffffff',
+                            borderRight: '2px solid #a0a0a0',
+                            borderBottom: '2px solid #a0a0a0',
+                            cursor: isDrawn ? 'default' : 'pointer',
+                            opacity: isDrawn ? 1 : 0.9,
+                            boxShadow: isDrawn ? 'inset 1px 1px 2px rgba(0,0,0,0.3)' : 'none'
+                          }}
+                        >
+                          {num}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )
           })

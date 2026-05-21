@@ -36,11 +36,13 @@ export default async function AdminPage() {
   const activeGames = [];
   for (const g of games.filter((g: Record<string, unknown>) => g.status === 'active')) {
     const ballsCountResult = await sql`SELECT COUNT(*) as count FROM balls WHERE game_id = ${g.id as number}`;
+    const drawnBallsResult = await sql`SELECT number FROM balls WHERE game_id = ${g.id as number}`;
     const cardsCountResult = await sql`SELECT COUNT(*) as count FROM cards WHERE game_id = ${g.id as number}`;
     
     activeGames.push({
       ...g,
       ballsCount: Number(ballsCountResult[0].count),
+      drawnBalls: drawnBallsResult.map((b: any) => b.number),
       cardsCount: Number(cardsCountResult[0].count)
     });
   }

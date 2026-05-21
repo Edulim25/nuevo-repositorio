@@ -71,6 +71,27 @@ export async function drawBall(gameId: number) {
   return { success: true, ball: nextBall };
 }
 
+export async function drawSpecificBall(gameId: number, ballNumber: number) {
+  // Check if ball already drawn
+  const drawnBalls = await sql`SELECT number FROM balls WHERE game_id = ${gameId} AND number = ${ballNumber}`;
+  if (drawnBalls.length > 0) return { error: 'Ball already drawn' };
+
+  await sql`INSERT INTO balls (game_id, number) VALUES (${gameId}, ${ballNumber})`;
+  revalidatePath('/admin');
+  return { success: true, ball: ballNumber };
+}
+
+export async function undoLastBall(gameId: number) {
+  // Get the most recent ball
+  const lastBallQuery = await sql`SELECT id FROM balls WHERE game_id = ${gameId} ORDER BY drawn_at DESC LIMIT 1`;
+  const lastBall = lastBallQuery[0];
+  if (!lastBall) return { error: 'No balls to undo' };
+
+  await sql`DELETE FROM balls WHERE id = ${lastBall.id}`;
+  revalidatePath('/admin');
+  return { success: true };
+}
+
 function getRandomNumbers(min: number, max: number, count: number) {
   const nums = new Set<number>();
   while (nums.size < count) {
