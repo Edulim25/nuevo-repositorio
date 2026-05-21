@@ -85,13 +85,14 @@ export default function Board({ drawnBalls, game }: { drawnBalls: number[], game
                         fontSize: '3vw', // Scale text dynamically
                         fontWeight: 'bold',
                         fontFamily: 'Arial, sans-serif',
+                        borderRadius: '50%',
                         background: isDrawn ? '#ffff00' : '#e0e0e0', // Yellow if drawn, grey if not
                         color: 'black',
                         borderTop: '2px solid #ffffff',
                         borderLeft: '2px solid #ffffff',
                         borderRight: '2px solid #a0a0a0',
                         borderBottom: '2px solid #a0a0a0',
-                        boxShadow: 'inset 1px 1px 0px white, inset -1px -1px 0px #808080'
+                        boxShadow: isDrawn ? 'inset 1px 1px 0px white, inset -1px -1px 0px #808080' : 'inset 2px 2px 5px white, inset -2px -2px 5px #808080'
                       }}
                     >
                       {num}

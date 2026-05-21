@@ -187,6 +187,7 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                             justifyContent: 'center',
                             fontSize: '1rem',
                             fontWeight: 'bold',
+                            borderRadius: '50%',
                             background: isDrawn ? '#ffff00' : '#ffffff',
                             color: 'black',
                             borderTop: '2px solid #ffffff',
@@ -195,7 +196,7 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                             borderBottom: '2px solid #a0a0a0',
                             cursor: isDrawn ? 'default' : 'pointer',
                             opacity: isDrawn ? 1 : 0.9,
-                            boxShadow: isDrawn ? 'inset 1px 1px 2px rgba(0,0,0,0.3)' : 'none'
+                            boxShadow: isDrawn ? 'inset 1px 1px 2px rgba(0,0,0,0.3)' : 'inset 2px 2px 5px rgba(0,0,0,0.2)'
                           }}
                         >
                           {num}
