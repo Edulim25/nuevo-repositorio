@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { startGame, drawBall, endGame, generateCards } from './actions';
 import { logout } from './auth-actions';
+import PatternSelector from './PatternSelector';
 
 export default function AdminClient({ companies, activeGames }: { companies: Record<string, unknown>[], activeGames: Record<string, unknown>[] }) {
   const company = companies[0];
   const selectedCompany = company?.id;
-  const [pattern, setPattern] = useState('figuras');
+  const [pattern, setPattern] = useState('[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]');
   const [targetCardId, setTargetCardId] = useState('');
   const [targetBall, setTargetBall] = useState('');
   const [series, setSeries] = useState('');
@@ -39,17 +40,7 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
           </div>
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Modo de Juego</label>
-          <select 
-            value={pattern} 
-            onChange={e => setPattern(e.target.value)}
-            style={{ width: '100%', padding: '10px', borderRadius: '5px', background: '#334155', color: 'white', border: 'none' }}
-          >
-            <option value="figuras">Figuras</option>
-            <option value="llena">Cartón Lleno (Llena)</option>
-          </select>
-        </div>
+        <PatternSelector value={pattern} onChange={setPattern} />
 
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', marginBottom: '5px' }}>Serie (Opcional)</label>
@@ -66,19 +57,17 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
           <input type="text" placeholder="Ej: Letra L" value={reintegroPattern} onChange={e => setReintegroPattern(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '5px', background: '#334155', color: 'white', border: 'none' }} />
         </div>
 
-        {pattern === 'llena' && (
-          <div style={{ marginBottom: '20px', padding: '15px', background: 'rgba(255,0,0,0.1)', border: '1px solid #ef4444', borderRadius: '8px' }}>
-            <h4 style={{ color: '#ef4444', marginBottom: '10px' }}>Ganador Programado (Opcional)</h4>
-            <div style={{ marginBottom: '10px' }}>
-              <label style={{ fontSize: '0.9rem' }}>ID del Cartón Ganador:</label>
-              <input type="number" placeholder="Ej: 5" value={targetCardId} onChange={e => setTargetCardId(e.target.value)} style={{ width: '100%', padding: '8px', marginTop: '5px', borderRadius: '4px', background: '#1e293b', color: 'white', border: '1px solid #475569' }} />
-            </div>
-            <div>
-              <label style={{ fontSize: '0.9rem' }}>Ganar exactamente en la balota N°:</label>
-              <input type="number" placeholder="Ej: 45" value={targetBall} onChange={e => setTargetBall(e.target.value)} style={{ width: '100%', padding: '8px', marginTop: '5px', borderRadius: '4px', background: '#1e293b', color: 'white', border: '1px solid #475569' }} />
-            </div>
+        <div style={{ marginBottom: '20px', padding: '15px', background: 'rgba(255,0,0,0.1)', border: '1px solid #ef4444', borderRadius: '8px' }}>
+          <h4 style={{ color: '#ef4444', marginBottom: '10px' }}>Ganador Programado (Opcional)</h4>
+          <div style={{ marginBottom: '10px' }}>
+            <label style={{ fontSize: '0.9rem' }}>ID del Cartón Ganador:</label>
+            <input type="number" placeholder="Ej: 5" value={targetCardId} onChange={e => setTargetCardId(e.target.value)} style={{ width: '100%', padding: '8px', marginTop: '5px', borderRadius: '4px', background: '#1e293b', color: 'white', border: '1px solid #475569' }} />
           </div>
-        )}
+          <div>
+            <label style={{ fontSize: '0.9rem' }}>Ganar exactamente en la balota N°:</label>
+            <input type="number" placeholder="Ej: 45" value={targetBall} onChange={e => setTargetBall(e.target.value)} style={{ width: '100%', padding: '8px', marginTop: '5px', borderRadius: '4px', background: '#1e293b', color: 'white', border: '1px solid #475569' }} />
+          </div>
+        </div>
 
         <button 
           className="btn" 
@@ -119,7 +108,7 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <div>
                     <h3 style={{ margin: 0 }}>{company?.name} (Juego #{game.id})</h3>
-                    <p style={{ margin: 0, color: '#94a3b8' }}>Modo: {game.winning_pattern} | Balotas cantadas: {game.ballsCount}</p>
+                    <p style={{ margin: 0, color: '#94a3b8' }}>Modo: Figura Personalizada | Balotas cantadas: {game.ballsCount}</p>
                     <p style={{ margin: 0, color: '#22d3ee' }}>Cartones Generados: {game.cardsCount}</p>
                     {game.target_winning_card_id && (
                       <p style={{ margin: 0, color: '#ef4444', fontSize: '0.9rem' }}>⚠️ Ganador Programado: Cartón {game.target_winning_card_id} en balota {game.target_winning_ball_number}</p>

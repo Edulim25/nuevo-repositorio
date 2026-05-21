@@ -59,7 +59,7 @@ export default async function CompanyPage({ params }: PageProps) {
       </header>
 
       <main>
-        <Board drawnBalls={drawnBalls} />
+        <Board drawnBalls={drawnBalls} game={game} />
       </main>
     </div>
   );
