@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { beanoPatterns } from './beanoPatterns';
 
 interface PatternSelectorProps {
   value: string; // The JSON string of the 5x5 grid
@@ -47,6 +48,15 @@ export default function PatternSelector({ value, onChange }: PatternSelectorProp
     }
   };
 
+  const handlePatternSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const patternName = e.target.value;
+    if (!patternName) return;
+    const selected = beanoPatterns.find((p: any) => p.name === patternName);
+    if (selected) {
+      setGrid(selected.grid);
+    }
+  };
+
   return (
     <div style={{ marginBottom: '20px' }}>
       <label style={{ display: 'block', marginBottom: '10px' }}>Representación Gráfica (Figura a Jugar)</label>
@@ -80,6 +90,16 @@ export default function PatternSelector({ value, onChange }: PatternSelectorProp
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <select 
+            onChange={handlePatternSelect}
+            style={{ padding: '8px', background: '#1e293b', color: 'white', border: '1px solid #475569', borderRadius: '4px' }}
+          >
+            <option value="">-- Cargar Figura Clásica --</option>
+            {beanoPatterns.map((p: any, idx: number) => (
+              <option key={idx} value={p.name}>{p.name}</option>
+            ))}
+          </select>
+          
           <button type="button" onClick={() => setPreset('llena')} style={{ padding: '8px 15px', background: '#334155', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             Cartón Lleno
           </button>
