@@ -106,32 +106,15 @@ export async function loadCardsFromMaster(gameId: number, startRange: number, en
   revalidatePath('/admin');
 }
 
-export async function loadCardsFromStaticSeries(gameId: number, seriesName: string, startRange: number, endRange: number) {
-  try {
-    const seriesPath = path.join(process.cwd(), 'src', 'lib', 'series', `${seriesName}.json`);
-    const fileContent = fs.readFileSync(seriesPath, 'utf8');
-    const seriesData = JSON.parse(fileContent);
-    
-    // Filtramos los cartones solicitados
-    const selectedCards = seriesData.filter((c: any) => c.id >= startRange && c.id <= endRange);
-    
-    if (selectedCards.length === 0) return { error: 'No se encontraron cartones en ese rango.' };
-
-    const newCards = selectedCards.map((c: any) => ({
-      game_id: gameId,
-      player_name: `Cartón ${c.id}`,
-      numbers_json: JSON.stringify(c.grid)
-    }));
-
-    // Inserción masiva en Supabase
-    await sql`INSERT INTO cards ${sql(newCards, 'game_id', 'player_name', 'numbers_json')}`;
-    
-    revalidatePath('/admin');
-    return { success: true };
-  } catch (error: any) {
-    console.error('Error loading static series:', error);
-    return { error: 'No se pudo cargar la serie. Asegúrate de que el archivo exista.' };
-  }
+export async function bulkInsertCards(gameId: number, cards: any[]) {
+  if (!cards || cards.length === 0) return;
+  const newCards = cards.map(c => ({
+    game_id: gameId,
+    player_name: `Cartón ${c.id}`,
+    numbers_json: JSON.stringify(c.grid)
+  }));
+  await sql`INSERT INTO cards ${sql(newCards, 'game_id', 'player_name', 'numbers_json')}`;
+  revalidatePath('/admin');
 }
 
 export async function endGame(gameId: number) {

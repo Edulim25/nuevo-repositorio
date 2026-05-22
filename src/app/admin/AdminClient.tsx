@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { startGame, drawBall, endGame, loadCardsFromMaster, loadCardsFromStaticSeries, drawSpecificBall, undoLastBall } from './actions';
+import { startGame, drawBall, endGame, loadCardsFromMaster, bulkInsertCards, drawSpecificBall, undoLastBall } from './actions';
 import { logout } from './auth-actions';
 import PatternSelector from './PatternSelector';
 
@@ -196,9 +196,22 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                           const start = parseInt((document.getElementById(`startRange-${game.id}`) as HTMLInputElement).value);
                           const end = parseInt((document.getElementById(`endRange-${game.id}`) as HTMLInputElement).value);
                           if (start > 0 && end >= start) {
-                            const res = await loadCardsFromStaticSeries(game.id as number, series, start, end);
-                            if (res && res.error) {
-                              alert(res.error);
+                            try {
+                              const res = await fetch(`/series/${series}.json`);
+                              if (!res.ok) {
+                                alert("No se encontró el archivo de la serie.");
+                                return;
+                              }
+                              const data = await res.json();
+                              const selected = data.filter((c: any) => c.id >= start && c.id <= end);
+                              if (selected.length === 0) {
+                                alert("No se encontraron cartones en ese rango.");
+                                return;
+                              }
+                              await bulkInsertCards(game.id as number, selected);
+                            } catch (e) {
+                              alert("Error al cargar la serie.");
+                              console.error(e);
                             }
                           } else {
                             alert("Ingresa un rango válido.");

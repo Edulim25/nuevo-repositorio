@@ -1,0 +1,52 @@
+﻿[
+    {
+        "Descripcion":  "Fijo",
+        "Id":  1,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Normal",
+        "Id":  2,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Cortesia / Cortesia Recaudo",
+        "Id":  3,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Adicional",
+        "Id":  4,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Sin Descuento",
+        "Id":  5,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Adicional sin Descuento",
+        "Id":  6,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Rey 1",
+        "Id":  7,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Rey 2",
+        "Id":  8,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Rey 3",
+        "Id":  9,
+        "Activas":  -1
+    },
+    {
+        "Descripcion":  "Rey 4",
+        "Id":  10,
+        "Activas":  -1
+    }
+]
