@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { startGame, drawBall, endGame, loadCardsFromMaster, drawSpecificBall, undoLastBall } from './actions';
+import { startGame, drawBall, endGame, loadCardsFromMaster, loadCardsFromStaticSeries, drawSpecificBall, undoLastBall } from './actions';
 import { logout } from './auth-actions';
 import PatternSelector from './PatternSelector';
 
@@ -157,25 +157,49 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                   <div style={{ marginBottom: '20px', background: '#d4d0c8', padding: '15px', borderRadius: '8px', border: '2px solid #808080' }}>
                     <h4 style={{ margin: 0, marginBottom: '10px', color: 'black' }}>Jugar con Cartones (Físicos)</h4>
                     <div style={{ display: 'flex', gap: '10px' }}>
+                      <select 
+                        id={`seriesSelect-${game.id}`}
+                        style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: 'white' }}
+                      >
+                        <option value="Srs_A">Serie A</option>
+                        <option value="Srs_B">Serie B</option>
+                        <option value="Srs_C">Serie C</option>
+                        <option value="Srs_D">Serie D</option>
+                        <option value="Srs_E">Serie E</option>
+                        <option value="Srs_bog">Bogotá</option>
+                        <option value="Srs_Yeison">Yeison</option>
+                        <option value="Srs_CompuJuegos">CompuJuegos</option>
+                        <option value="Srs36000">Serie 36000</option>
+                        <option value="SRS_CLO2">CLO2</option>
+                        <option value="Srs_Manila">Manila</option>
+                        <option value="Srs_BU_Segunda">BU Segunda</option>
+                        <option value="Srs_BU_Tercera">BU Tercera</option>
+                        <option value="Srs_BU_Cuarta">BU Cuarta</option>
+                        <option value="Srs_BU_Quinta">BU Quinta</option>
+                      </select>
                       <input 
                         type="number" 
                         placeholder="Desde N°" 
                         id={`startRange-${game.id}`}
-                        style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: 'white' }}
+                        style={{ padding: '8px', width: '80px', borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: 'white' }}
                       />
                       <input 
                         type="number" 
                         placeholder="Hasta N°" 
                         id={`endRange-${game.id}`}
-                        style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: 'white' }}
+                        style={{ padding: '8px', width: '80px', borderRadius: '4px', border: '1px solid #475569', background: '#1e293b', color: 'white' }}
                       />
                       <button 
                         className="btn" 
                         onClick={async () => {
+                          const series = (document.getElementById(`seriesSelect-${game.id}`) as HTMLSelectElement).value;
                           const start = parseInt((document.getElementById(`startRange-${game.id}`) as HTMLInputElement).value);
                           const end = parseInt((document.getElementById(`endRange-${game.id}`) as HTMLInputElement).value);
                           if (start > 0 && end >= start) {
-                            await loadCardsFromMaster(game.id as number, start, end);
+                            const res = await loadCardsFromStaticSeries(game.id as number, series, start, end);
+                            if (res && res.error) {
+                              alert(res.error);
+                            }
                           } else {
                             alert("Ingresa un rango válido.");
                           }

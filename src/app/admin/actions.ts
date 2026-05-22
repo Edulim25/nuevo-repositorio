@@ -2,6 +2,8 @@
 
 import sql from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import fs from 'fs';
+import path from 'path';
 
 export async function startGame(companyId: number, pattern: string, targetCardId?: number, targetBall?: number, series?: string, bonusPattern?: string, reintegroPattern?: string) {
   await sql`
@@ -93,7 +95,7 @@ export async function undoLastBall(gameId: number) {
 }
 
 export async function loadCardsFromMaster(gameId: number, startRange: number, endRange: number) {
-  // Instead of generating random cards, we import them from the master_cards table
+  // Legacy: use this for backwards compatibility if they used the SQL
   await sql`
     INSERT INTO cards (game_id, player_name, numbers_json)
     SELECT ${gameId}, 'Cartón ' || card_number, numbers_json
@@ -102,6 +104,34 @@ export async function loadCardsFromMaster(gameId: number, startRange: number, en
   `;
   
   revalidatePath('/admin');
+}
+
+export async function loadCardsFromStaticSeries(gameId: number, seriesName: string, startRange: number, endRange: number) {
+  try {
+    const seriesPath = path.join(process.cwd(), 'src', 'lib', 'series', `${seriesName}.json`);
+    const fileContent = fs.readFileSync(seriesPath, 'utf8');
+    const seriesData = JSON.parse(fileContent);
+    
+    // Filtramos los cartones solicitados
+    const selectedCards = seriesData.filter((c: any) => c.id >= startRange && c.id <= endRange);
+    
+    if (selectedCards.length === 0) return { error: 'No se encontraron cartones en ese rango.' };
+
+    const newCards = selectedCards.map((c: any) => ({
+      game_id: gameId,
+      player_name: `Cartón ${c.id}`,
+      numbers_json: JSON.stringify(c.grid)
+    }));
+
+    // Inserción masiva en Supabase
+    await sql`INSERT INTO cards ${sql(newCards, 'game_id', 'player_name', 'numbers_json')}`;
+    
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error loading static series:', error);
+    return { error: 'No se pudo cargar la serie. Asegúrate de que el archivo exista.' };
+  }
 }
 
 export async function endGame(gameId: number) {
