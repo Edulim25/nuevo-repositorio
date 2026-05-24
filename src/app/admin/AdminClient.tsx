@@ -71,7 +71,7 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
 
         <button 
           className="btn" 
-          style={{ width: '100%' }}
+          style={{ width: '100%', marginTop: '10px' }}
           onClick={async () => {
             const cId = Number(targetCardId);
             const bNum = Number(targetBall);
@@ -127,8 +127,8 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                 )}
 
                 {game.cardsCount > 0 && (
-                  <div style={{ marginBottom: '20px', padding: '15px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', border: '1px solid #10b981' }}>
-                    <h4 style={{ color: '#10b981', marginBottom: '10px' }}>Imprimir Cartones</h4>
+                  <div className="glass-panel" style={{ marginBottom: '20px', padding: '15px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                    <h4 style={{ color: '#34d399', marginBottom: '10px' }}>🖨️ Imprimir Cartones</h4>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
                       <label style={{ fontSize: '0.9rem' }}>Desde N°:</label>
                       <input 
@@ -148,14 +148,14 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                       />
                     </div>
                     <a href={`/admin/cards/${game.id}?start=${printRanges[game.id as number]?.start || 1}&end=${printRanges[game.id as number]?.end || game.cardsCount}`} target="_blank" rel="noreferrer">
-                      <button className="btn" style={{ background: '#10b981', width: '100%' }}>🖨️ Ver / Imprimir Rango Seleccionado</button>
+                      <button className="btn btn-success" style={{ width: '100%', marginTop: '10px' }}>Ver / Imprimir Rango Seleccionado</button>
                     </a>
                   </div>
                 )}
                 <div>
                 {!game.is_finished && (
-                  <div style={{ marginBottom: '20px', background: '#d4d0c8', padding: '15px', borderRadius: '8px', border: '2px solid #808080' }}>
-                    <h4 style={{ margin: 0, marginBottom: '10px', color: 'black' }}>Jugar con Cartones (Físicos)</h4>
+                  <div className="glass-panel" style={{ marginBottom: '20px', padding: '20px' }}>
+                    <h4 style={{ margin: 0, marginBottom: '15px', color: 'var(--neon-cyan)', fontSize: '1.2rem' }}>Jugar con Cartones Físicos</h4>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <select 
                         id={`seriesSelect-${game.id}`}
@@ -221,15 +221,14 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                         Poner en Juego
                       </button>
                     </div>
-                    <p style={{ marginTop: '10px', fontSize: '0.9rem', color: '#333' }}>*Esto cargará los cartones pre-impresos para que el sistema reconozca al ganador automáticamente.</p>
+                    <p style={{ marginTop: '15px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>*Carga los cartones pre-impresos para detección automática de ganadores.</p>
                   </div>
                 )}  
-                  <div style={{ background: '#d4d0c8', padding: '15px', borderRadius: '8px', border: '2px solid #808080' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                      <h4 style={{ margin: 0, color: 'black' }}>Tablero de Control Manual</h4>
+                  <div className="glass-panel" style={{ padding: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                      <h4 style={{ margin: 0, color: 'var(--neon-cyan)', fontSize: '1.2rem' }}>Tablero de Control Manual</h4>
                       <button 
-                        className="btn" 
-                        style={{ background: '#ef4444', padding: '8px 15px', fontSize: '0.9rem' }}
+                        className="btn btn-danger" 
                         onClick={async () => {
                           await undoLastBall(game.id as number);
                         }}
@@ -237,7 +236,7 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                         ⏪ Deshacer Última Balota
                       </button>
                     </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(15, 1fr)', gap: '4px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(15, 1fr)', gap: '8px' }}>
                     {Array.from({ length: 75 }).map((_, i) => {
                       const num = i + 1;
                       const drawnBalls = (game.drawnBalls as number[]) || [];
@@ -245,28 +244,11 @@ export default function AdminClient({ companies, activeGames }: { companies: Rec
                       return (
                         <button
                           key={num}
+                          className={`bingo-ball-btn ${isDrawn ? 'active animate-pop' : ''}`}
                           onClick={async () => {
                             if (!isDrawn) {
                               await drawSpecificBall(game.id as number, num);
                             }
-                          }}
-                          style={{
-                            aspectRatio: '1/1',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1rem',
-                            fontWeight: 'bold',
-                            borderRadius: '50%',
-                            background: isDrawn ? '#ffff00' : '#ffffff',
-                            color: 'black',
-                            borderTop: '2px solid #ffffff',
-                            borderLeft: '2px solid #ffffff',
-                            borderRight: '2px solid #a0a0a0',
-                            borderBottom: '2px solid #a0a0a0',
-                            cursor: isDrawn ? 'default' : 'pointer',
-                            opacity: isDrawn ? 1 : 0.9,
-                            boxShadow: isDrawn ? 'inset 1px 1px 2px rgba(0,0,0,0.3)' : 'inset 2px 2px 5px rgba(0,0,0,0.2)'
                           }}
                         >
                           {num}
