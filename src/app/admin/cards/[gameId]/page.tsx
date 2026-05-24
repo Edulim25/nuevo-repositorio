@@ -23,7 +23,8 @@ export default async function CardsPage({ params, searchParams }: Props) {
 
   const cards = await sql`SELECT * FROM cards WHERE game_id = ${game.id} ORDER BY id ASC`;
 
-  // Filter by range
+  // Para cartones generados aleatoriamente, el rango se basa en el índice (1 a N).
+  // Para cartones físicos, simplemente usamos todos los que estén en la DB, pero respetamos el slice si es necesario.
   const startIdx = start ? Number(start) - 1 : 0;
   const endIdx = end ? Number(end) : cards.length;
   const rangedCards = cards.slice(Math.max(0, startIdx), Math.min(cards.length, endIdx));
@@ -50,7 +51,15 @@ export default async function CardsPage({ params, searchParams }: Props) {
         }
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; margin: 0; padding: 0; }
+          body, html { 
+            background: white !important; 
+            color: black !important;
+            margin: 0; 
+            padding: 0; 
+          }
+          * {
+            color: black !important;
+          }
           .a4-page {
             width: 190mm;
             height: 277mm; /* A4 height (297) minus 20mm margins */
@@ -82,6 +91,7 @@ export default async function CardsPage({ params, searchParams }: Props) {
           padding: 2mm;
           box-sizing: border-box;
           height: 100%;
+          color: black !important;
         }
 
         .bingo-grid {
@@ -120,9 +130,11 @@ export default async function CardsPage({ params, searchParams }: Props) {
               return (
                 <div key={card.id} className="card-wrapper">
                   <div style={{ textAlign: 'center', marginBottom: '4px', lineHeight: '1.2' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '13px' }}>
-                      CARTÓN N° {startIdx + (pageIndex * 8) + chunk.indexOf(card) + 1} 
-                      <span style={{fontSize: '9px', fontWeight: 'normal', marginLeft: '5px'}}>(ID: {card.id})</span>
+                    <div style={{ fontWeight: 'bold', fontSize: '13px', textTransform: 'uppercase' }}>
+                      {card.player_name && card.player_name.startsWith('Cartón') 
+                        ? card.player_name 
+                        : `CARTÓN N° ${startIdx + (pageIndex * 8) + chunk.indexOf(card) + 1}`}
+                      <span style={{fontSize: '9px', fontWeight: 'normal', marginLeft: '5px'}}>(Ref: {card.id})</span>
                     </div>
                     {game.series && <div style={{ fontSize: '11px', fontWeight: 'bold' }}>SERIE: {String(game.series)}</div>}
                     <div style={{ fontSize: '10px' }}>JUEGA POR: {String(game.winning_pattern)}</div>
